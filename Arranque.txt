@@ -1,0 +1,3 @@
+Entrar el entorno virtual
+
+conda activate oracle-roles
