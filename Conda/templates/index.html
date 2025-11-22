@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Roles | Siglo 21</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de Lucide (estilo Siglo 21) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fuente Montserrat para que se parezca a la oficial -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* El color verde institucional aproximado */
+        .text-siglo { color: #009846; }
+        .bg-siglo { background-color: #009846; }
+        .border-siglo { border-color: #009846; }
+        
+        /* Animación suave para las tarjetas */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Fondo con imagen oscurecida */
+        .bg-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Ocultar scrollbar pero permitir scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-image min-h-screen text-white flex flex-col items-center">
+
+    <!-- HEADER / LOGO -->
+    <header class="w-full p-6 flex justify-center items-center">
+        <div class="flex items-center space-x-2">
+            <!-- Logo Siglo 21 -->
+            <div class="bg-white p-2 rounded-sm">
+                <span class="text-black font-bold text-xl tracking-tighter">SIGLO 21</span>
+            </div>
+            <span class="text-white text-sm uppercase tracking-widest ml-2 border-l border-white pl-2"></span>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-grow flex flex-col items-center justify-center w-full max-w-6xl px-4 py-8" id="main-container">
+        
+        <!-- VISTA 1: MENÚ PRINCIPAL (SELECCIÓN) -->
+        <div id="view-home" class="text-center w-full max-w-4xl transition-opacity duration-500">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Bienvenido al Sistema de Roles</h1>
+            <p class="text-xl text-gray-200 mb-12">Selecciona una acción para comenzar</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+                
+                <!-- Tarjeta 1: Ver Roles -->
+                <button onclick="showRoles()" class="card-hover bg-white rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer group h-64 w-full">
+                    <div class="bg-gray-100 p-4 rounded-full mb-6 group-hover:bg-green-50 transition-colors">
+                        <i data-lucide="list" class="w-10 h-10 text-gray-600 group-hover:text-siglo"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-siglo transition-colors">Ver Lista de Roles</h3>
+                    <div class="w-16 h-1 bg-gray-200 mt-4 rounded group-hover:bg-siglo transition-colors"></div>
+                </button>
+
+                <!-- Tarjeta 2: Gestionar (Check/Grant) -->
+                <button onclick="showManagement()" class="card-hover bg-white rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer group h-64 w-full">
+                    <div class="bg-gray-100 p-4 rounded-full mb-6 group-hover:bg-green-50 transition-colors">
+                        <i data-lucide="user-cog" class="w-10 h-10 text-gray-600 group-hover:text-siglo"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-siglo transition-colors">Gestionar Usuario</h3>
+                    <div class="w-16 h-1 bg-gray-200 mt-4 rounded group-hover:bg-siglo transition-colors"></div>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- VISTA 2: LISTA DE ROLES (Inicialmente oculta) -->
+        <div id="view-roles" class="hidden w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden text-gray-800 fade-in">
+            <!-- Cabecera de la vista -->
+            <div class="bg-gray-50 p-6 border-b flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="database" class="text-siglo"></i> Roles Disponibles en Oracle
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Consulta directa a tabla ue21.ue_roles</p>
+                </div>
+                <button onclick="goHome()" class="text-gray-500 hover:text-siglo flex items-center gap-1 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+                </button>
+            </div>
+
+            <!-- Área de contenido (Grilla) -->
+            <div class="p-6 bg-gray-50/50 min-h-[400px] max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <div id="roles-loader" class="flex flex-col items-center justify-center h-64 text-gray-400">
+                    <i data-lucide="loader-2" class="w-12 h-12 animate-spin mb-4 text-siglo"></i>
+                    <p>Conectando con Base de Datos...</p>
+                </div>
+
+                <div id="roles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
+                    <!-- Aquí se inyectarán las tarjetas JS -->
+                </div>
+                
+                <!-- Mensaje de error si falla -->
+                <div id="roles-error" class="hidden flex flex-col items-center justify-center h-64 text-red-500">
+                    <i data-lucide="alert-triangle" class="w-12 h-12 mb-4"></i>
+                    <p class="font-bold text-lg">Error de Conexión</p>
+                    <p class="text-sm" id="error-text">No se pudo contactar con la API</p>
+                    <button onclick="fetchRoles()" class="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">Reintentar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: GESTIÓN DE USUARIO (Inicialmente oculta) -->
+        <div id="view-management" class="hidden w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden text-gray-800 fade-in">
+            <div class="bg-gray-50 p-6 border-b flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="search" class="text-siglo"></i> Buscar & Asignar
+                </h2>
+                <button onclick="goHome()" class="text-gray-500 hover:text-siglo flex items-center gap-1 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+                </button>
+            </div>
+            
+            <div class="p-8 flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="hard-hat" class="w-10 h-10 text-siglo"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Esta función está en construcción</h3>
+                <p class="text-gray-500 max-w-md">
+                    Pronto podrás buscar usuarios (check) y asignar roles (grant) desde esta interfaz conectada a la API.
+                </p>
+                <button onclick="goHome()" class="mt-8 px-6 py-2 bg-siglo text-white rounded hover:bg-green-700 transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full p-4 text-center text-gray-400 text-xs">
+        <p>&copy; 2025 App Roles - Siglo 21</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT PARA CONECTAR CON API.PY -->
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+
+        // Referencias a las vistas
+        const viewHome = document.getElementById('view-home');
+        const viewRoles = document.getElementById('view-roles');
+        const viewMgmt = document.getElementById('view-management');
+
+        // Función para cambiar de vistas
+        function switchView(viewToShow) {
+            [viewHome, viewRoles, viewMgmt].forEach(el => el.classList.add('hidden'));
+            viewToShow.classList.remove('hidden');
+        }
+
+        function goHome() {
+            switchView(viewHome);
+        }
+
+        function showManagement() {
+            switchView(viewMgmt);
+        }
+
+        // --- FUNCIÓN PRINCIPAL: VER ROLES ---
+        function showRoles() {
+            switchView(viewRoles);
+            fetchRoles(); // Llamar a la API
+        }
+
+        // --- CONEXIÓN CON PYTHON ---
+        async function fetchRoles() {
+            const loader = document.getElementById('roles-loader');
+            const grid = document.getElementById('roles-grid');
+            const errorDiv = document.getElementById('roles-error');
+            const errorText = document.getElementById('error-text');
+
+            // Resetear estado
+            loader.classList.remove('hidden');
+            grid.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            grid.innerHTML = ''; // Limpiar contenido anterior
+
+            try {
+                // Llamada al endpoint que creamos en api.py
+                // Nota: Al servir este HTML desde Flask, la ruta relativa '/roles' funciona
+                const response = await fetch('/roles'); 
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Si llegamos aquí, ¡tenemos datos!
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+                
+                renderRoles(data.roles);
+
+            } catch (error) {
+                console.error('Error:', error);
+                loader.classList.add('hidden');
+                errorDiv.classList.remove('hidden');
+                errorText.textContent = error.message || 'No se pudo conectar a la base de datos';
+            }
+        }
+
+        // Función para dibujar las tarjetas de roles
+        function renderRoles(roles) {
+            const grid = document.getElementById('roles-grid');
+            
+            if (roles.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center py-10">No hay roles disponibles</p>';
+                return;
+            }
+
+            roles.forEach(rol => {
+                // Crear tarjeta HTML para cada rol
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-gray-200 p-4 rounded-lg hover:border-green-500 hover:shadow-md transition-all flex items-center gap-4 group';
+                
+                card.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-sm group-hover:bg-green-100 group-hover:text-green-700">
+                        ${rol.id}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm group-hover:text-green-700">${rol.nombre}</h4>
+                        <span class="text-xs text-gray-400">ID Sistema: ${rol.id}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
