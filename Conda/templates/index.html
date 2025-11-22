@@ -6,21 +6,19 @@
     <title>Gestión de Roles | Siglo 21</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Iconos de Lucide (estilo Siglo 21) -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Fuente Montserrat para que se parezca a la oficial -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
         }
-        /* El color verde institucional aproximado */
+        /* El color verde institucional */
         .text-siglo { color: #009846; }
         .bg-siglo { background-color: #009846; }
         .border-siglo { border-color: #009846; }
         
-        /* Animación suave para las tarjetas */
+        /* Animación suave */
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -52,7 +50,7 @@
     <!-- HEADER / LOGO -->
     <header class="w-full p-6 flex justify-center items-center">
         <div class="flex items-center space-x-2">
-            <!-- Logo Siglo 21 -->
+            <!-- Logo de la Siglo 21 -->
             <div class="bg-white p-2 rounded-sm">
                 <span class="text-black font-bold text-xl tracking-tighter">SIGLO 21</span>
             </div>
@@ -63,7 +61,7 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="flex-grow flex flex-col items-center justify-center w-full max-w-6xl px-4 py-8" id="main-container">
         
-        <!-- VISTA 1: MENÚ PRINCIPAL (SELECCIÓN) -->
+        <!-- VISTA 1: Menu  -->
         <div id="view-home" class="text-center w-full max-w-4xl transition-opacity duration-500">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Bienvenido al Sistema de Roles</h1>
             <p class="text-xl text-gray-200 mb-12">Selecciona una acción para comenzar</p>
@@ -91,7 +89,7 @@
             </div>
         </div>
 
-        <!-- VISTA 2: LISTA DE ROLES (Inicialmente oculta) -->
+        <!-- VISTA 2: LISTA DE ROLES (primero oculta) -->
         <div id="view-roles" class="hidden w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden text-gray-800 fade-in">
             <!-- Cabecera de la vista -->
             <div class="bg-gray-50 p-6 border-b flex justify-between items-center">
@@ -114,7 +112,7 @@
                 </div>
 
                 <div id="roles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
-                    <!-- Aquí se inyectarán las tarjetas JS -->
+                    <!-- Aca se inyectarán las tarjetas JS -->
                 </div>
                 
                 <!-- Mensaje de error si falla -->
@@ -127,7 +125,7 @@
             </div>
         </div>
 
-        <!-- VISTA 3: GESTIÓN DE USUARIO (Inicialmente oculta) -->
+        <!-- VISTA 3: gestion de usuario (primero oculta) -->
         <div id="view-management" class="hidden w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden text-gray-800 fade-in">
             <div class="bg-gray-50 p-6 border-b flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -158,7 +156,7 @@
         <p>&copy; 2025 App Roles - Siglo 21</p>
     </footer>
 
-    <!-- LÓGICA JAVASCRIPT PARA CONECTAR CON API.PY -->
+    <!-- javascript para conectar conectar API.PY -->
     <script>
         // Inicializar iconos
         lucide.createIcons();
@@ -188,7 +186,7 @@
             fetchRoles(); // Llamar a la API
         }
 
-        // --- CONEXIÓN CON PYTHON ---
+        // conexion con python
         async function fetchRoles() {
             const loader = document.getElementById('roles-loader');
             const grid = document.getElementById('roles-grid');
@@ -202,8 +200,8 @@
             grid.innerHTML = ''; // Limpiar contenido anterior
 
             try {
-                // Llamada al endpoint que creamos en api.py
-                // Nota: Al servir este HTML desde Flask, la ruta relativa '/roles' funciona
+                // Llamada al endpoint que hice en api.py
+                // Al servir este HTML desde Flask, la ruta relativa '/roles' funciona
                 const response = await fetch('/roles'); 
 
                 if (!response.ok) {
@@ -216,7 +214,6 @@
                     throw new Error(data.error);
                 }
 
-                // Si llegamos aquí, ¡tenemos datos!
                 loader.classList.add('hidden');
                 grid.classList.remove('hidden');
                 
@@ -230,7 +227,7 @@
             }
         }
 
-        // Función para dibujar las tarjetas de roles
+        // Función para las tarjetas de roles
         function renderRoles(roles) {
             const grid = document.getElementById('roles-grid');
             
@@ -240,7 +237,7 @@
             }
 
             roles.forEach(rol => {
-                // Crear tarjeta HTML para cada rol
+                // Crea tarjeta HTML para cada rol
                 const card = document.createElement('div');
                 card.className = 'bg-white border border-gray-200 p-4 rounded-lg hover:border-green-500 hover:shadow-md transition-all flex items-center gap-4 group';
                 
@@ -258,4 +255,5 @@
         }
     </script>
 </body>
+
 </html>
