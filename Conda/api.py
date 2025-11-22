@@ -1,27 +1,22 @@
-# --- Importaciones de Flask ---
 from flask import Flask, jsonify
 import os
-from typing import Dict, List  # <-- ¡ESTA ES LA LÍNEA NUEVA!
-
-# --- Importaciones de TU script original (rol_management.py) ---
+from typing import Dict, List  
 import sys
 import oracledb
 from dotenv import load_dotenv
 
-# --- TU CÓDIGO de rol_management.py ---
-# ¡Aquí es donde copias y pegas tu propio código!
-#
+
 def load_db_config():
     """Carga configuracion desde variables de entorno."""
-    # Load .env file
+    
     load_dotenv()
     
-    # Get required environment variables
+    
     config = {
         'user': os.getenv('DB_USER'),
         'password': os.getenv('DB_PASSWORD'),
         'host': os.getenv('DB_HOST'),
-        'port': int(os.getenv('DB_PORT', '1521')),  # Default to 1521 if not specified
+        'port': int(os.getenv('DB_PORT', '1521')),  
         'sid': os.getenv('DB_SID'),
         'service': os.getenv('DB_SERVICE')
     }
@@ -40,9 +35,7 @@ def load_db_config():
     
     print(f"--- DEBUG: Buscando .env en: {dotenv_path} ---") # DEBUG
     
-    # --- CORRECCIÓN ---
-    # Forzamos la codificación a utf-8 (común en Windows)
-    # y guardamos el resultado para ver si tuvo éxito
+    
     load_success = load_dotenv(dotenv_path=dotenv_path, encoding='utf-8')
     # --- FIN CORRECCIÓN ---
     
@@ -56,7 +49,7 @@ def load_db_config():
         'sid': os.getenv('DB_SID'),
     } 
     
-    # DEBUG: Imprimir qué variable leyó
+    # DEBUG: Imprimir que variable leyo
     print(f"--- DEBUG: DB_USER leído: {config['user']} ---")
     
     required_params = ['user', 'password', 'host', 'sid']
@@ -198,10 +191,9 @@ class RoleManager:
                 print(f"Info: Usuario '{user}' ya tiene el rol {role_id} ({self.roles.get(role_id, '')})")
                 return True
 
-            # Get the next available ID for new role assignment
             cursor.execute("SELECT MAX(ID) + 1 FROM ue21.UE_USUARIO_ROLES")
             max_id_result = cursor.fetchone()
-            new_id = max_id_result[0] if max_id_result[0] is not None else 1  # If no records, start from 1
+            new_id = max_id_result[0] if max_id_result[0] is not None else 1  
 
             cursor.execute(
                 "INSERT INTO ue21.ue_usuario_roles (id, rol_id, usr_id) VALUES (:id, :rol_id, :usr_id)",
@@ -300,10 +292,10 @@ def list_all_roles(self):
                 print(f"Info: Usuario '{user}' ya tiene el rol {role_id} ({self.roles.get(role_id, '')})")
                 return True
 
-            # Get the next available ID for new role assignment
+           
             cursor.execute("SELECT MAX(ID) + 1 FROM ue21.UE_USUARIO_ROLES")
             max_id_result = cursor.fetchone()
-            new_id = max_id_result[0] if max_id_result[0] is not None else 1  # If no records, start from 1
+            new_id = max_id_result[0] if max_id_result[0] is not None else 1  
 
             cursor.execute(
                 "INSERT INTO ue21.ue_usuario_roles (id, rol_id, usr_id) VALUES (:id, :rol_id, :usr_id)",
@@ -329,17 +321,17 @@ def list_all_roles(self):
         finally:
             cursor.close()
 
-# --- Configuración de Flask ---
+# --- Configuración de Flask 
 app = Flask(__name__)
 
-# --- Conexión Global a la DB (Esto se ejecuta 1 vez) ---
-role_manager = None # Inicializamos en None
+# Conexión Global a la DB (Esto se ejecuta 1 vez) 
+role_manager = None # Inicializa en None
 try:
     db_config = load_db_config()
     connection = connect_to_db(db_config)
 
     if connection:
-        # Creamos la instancia de tu clase
+        # Creo la instancia de tu clase
         role_manager = RoleManager(db_connection=connection)
         print("¡Conexión a Oracle DB exitosa!")
     else:
@@ -349,14 +341,14 @@ except Exception as e:
     print(f"Error fatal al inicializar la app: {e}", file=sys.stderr)
 
 
-# --- Definición de Endpoints (Las "Puertas" de la API) ---
+# --- Definición de Endpoints (Las puertas de la API) ---
 
 @app.route("/")
 def index():
     # La página principal
     return "¡Mi servidor API está funcionando y listo para conectar a Oracle!"
 
-@app.route("/roles") # <-- ¡ESTA ES LA RUTA QUE FALTABA!
+@app.route("/roles") 
 def get_all_roles():
     """
     El front-end llamará a http://127.0.0.1:5000/roles
@@ -364,7 +356,7 @@ def get_all_roles():
     if not role_manager:
         return jsonify({"error": "El servidor no pudo conectarse a la base de datos"}), 500
     try:
-        # ¡Llamamos al método modificado de TU clase!
+        # Llamo al método modificado de la clase
         roles_data = role_manager.list_all_roles()
 
         # Flask convierte este diccionario de Python en JSON
@@ -373,6 +365,6 @@ def get_all_roles():
     except Exception as e:
         return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
 
-# --- Punto de entrada para ejecutar el servidor ---
+# Punto de entrada para ejecutar el servidor 
 if __name__ == "__main__":
     app.run(debug=True)
